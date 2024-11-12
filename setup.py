@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'cwt_npkphcth_reader = eureka_geomod_2.cwt_npkphcth_reader:main',
+            'geomod_usb = eureka_geomod_2.geomod_usb:main',
         ],
     },
 )
