@@ -50,6 +50,7 @@ __end__"
         self.get_logger().info("usb_geomod Killed!")
 
     def send(self):
+        try:
             print(len(self.command_format))
             message = self.command_format % (self.heartbeat, self.control_mode, self.power_saving,
                                              self.platform_vel, self.drill_vel, self.drill_vel_rot, 
@@ -58,7 +59,11 @@ __end__"
             print(self.arm.write(bytes(message, encoding='utf8')))
             reply = self.arm.read_until(str.encode("__end__")).decode('utf-8')
             print(reply)
-
+        except serial.serialutil.SerialException:
+            try:
+                self.arm = serial.Serial('/dev/geomod', 9600, timeout=1)
+            except serial.serialutil.SerialException:
+                None
 
 
     def arm_callback(self,message):
