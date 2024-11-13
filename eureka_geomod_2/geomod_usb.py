@@ -60,6 +60,7 @@ __end__"
             reply = self.arm.read_until(str.encode("__end__")).decode('utf-8')
             print(reply)
         except serial.serialutil.SerialException:
+            self.get_logger().warning("No USB FS Connection to Geomod!")
             try:
                 self.arm = serial.Serial('/dev/geomod', 9600, timeout=1)
             except serial.serialutil.SerialException:
