@@ -31,8 +31,11 @@ drill: lin_vel=%.2f, ang_vel=%.2f\r\n\
 carousel: rot_vel=%.2f\r\n\
 needle: lin_vel = %.2f\r\n\
 __end__";
-        self.reply_format = "Nothing to reply!\r\n\
-__end__"
+        self.reply_format = "platform: effort=%f\r\n\
+drill: effort_lin=%f, effort_ang=%f\r\n\
+carousel: effort=%f\r\n\
+needle: effort=%f\r\n\
+__end__";
         flag = 0
         while flag < 1:
             try:

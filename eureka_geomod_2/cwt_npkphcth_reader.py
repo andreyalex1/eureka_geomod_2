@@ -33,20 +33,27 @@ class cwt_npkphcth_reader(Node):
     def __del__(self):
         self.get_logger().info("cwt_npkphcth_reader Killed!")
     def publisher(self):
-        message = JointState()
-        self.ser.write(b'\x01\x03\x00\x00\x00\x07\x04\x08')
-        bt = self.ser.read(19)
-        ba = bytearray(bt)
-        self.moisture = float(int.from_bytes(ba[3:5], "big") / 10)
-        self.temperature = float(int.from_bytes(ba[5:7], "big") / 10)
-        self.conductivity = float(int.from_bytes(ba[7:9], "big") / 10)
-        self.ph = float(int.from_bytes(ba[9:11], "big") / 10)
-        self.nitrogen = float(int.from_bytes(ba[11:13], "big") / 10)
-        self.phosphorus = float(int.from_bytes(ba[13:15], "big") / 10)
-        self.potassium = float(int.from_bytes(ba[15:17], "big") / 10)
-        message.name = ['nitrogen', 'phosphorus', 'potassium', 'ph', 'conductivity', 'soil_temperature', 'moisture']
-        message.position = [self.nitrogen, self.phosphorus, self.potassium, self.ph, self.conductivity, self.temperature, self.moisture]
-        self.pub.publish(message)
+        try:
+            message = JointState()
+            self.ser.write(b'\x01\x03\x00\x00\x00\x07\x04\x08')
+            bt = self.ser.read(19)
+            ba = bytearray(bt)
+            self.moisture = float(int.from_bytes(ba[3:5], "big") / 10)
+            self.temperature = float(int.from_bytes(ba[5:7], "big") / 10)
+            self.conductivity = float(int.from_bytes(ba[7:9], "big") / 10)
+            self.ph = float(int.from_bytes(ba[9:11], "big") / 10)
+            self.nitrogen = float(int.from_bytes(ba[11:13], "big") / 10)
+            self.phosphorus = float(int.from_bytes(ba[13:15], "big") / 10)
+            self.potassium = float(int.from_bytes(ba[15:17], "big") / 10)
+            message.name = ['nitrogen', 'phosphorus', 'potassium', 'ph', 'conductivity', 'soil_temperature', 'moisture']
+            message.position = [self.nitrogen, self.phosphorus, self.potassium, self.ph, self.conductivity, self.temperature, self.moisture]
+            self.pub.publish(message)
+        except serial.serialutil.SerialException:
+            self.get_logger().warning("No USB Connection to Needle!")
+            try:
+                self.ser = serial.Serial('/dev/needle', 4800, timeout=1)
+            except serial.serialutil.SerialException:
+                None
     
 
 def main(args=None):
