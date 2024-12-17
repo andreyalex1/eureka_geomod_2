@@ -25,6 +25,7 @@ class arm_usb(Node):
         self.drill_vel_rot = 0.0
         self.carousel_vel = 0.0
         self.needle_vel = 0.0
+        self.heartbeat_counter = 0
         self.command_format = "global: heartbeat=%d, control_mode=%d, power_saving=%d\r\n\
 platform: lin_vel=%.2f\r\n\
 drill: lin_vel=%.2f, ang_vel=%.2f\r\n\
@@ -47,6 +48,7 @@ __end__";
         flag = 0
         timer_period = 0.05  # seconds
         self.timer = self.create_timer(timer_period, self.send)
+        self.timer2 = self.create_timer(.1, self.heartbeat_function)
         self.send()
         self.get_logger().info("usb_geomod Started!")
     def __del__(self):
@@ -71,6 +73,7 @@ __end__";
 
 
     def arm_callback(self,message):
+        self.heartbeat_counter = 0
         self.platform_vel = list(message.velocity)[list(message.name).index('platform_vel')]
         self.drill_vel = list(message.velocity)[list(message.name).index('drill_vel')]
         self.drill_vel_rot = list(message.velocity)[list(message.name).index('drill_vel_rot')]
@@ -80,6 +83,17 @@ __end__";
         self.heartbeat = data.position[list(data.name).index('heartbeat')]
         self.control_mode = data.position[list(data.name).index('control_mode')]
         self.power_saving = data.position[list(data.name).index('power_saving')]
+
+
+    def heartbeat_function(self):
+        self.heartbeat_counter += 1
+   #     print(self.heartbeat_counter)
+        if(self.heartbeat_counter > 15):
+            self.platform_vel = 0.0
+            self.drill_vel = 0.0
+            self.drill_vel_rot = 0.0
+            self.carousel_vel = 0.0
+            self.needle_vel = 0.0
 
 
 
